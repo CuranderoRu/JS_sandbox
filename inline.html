@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=10">
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js" integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og==" crossorigin=""></script>
+    <style type="text/css">
+        html {
+            height: 100%
+        }
+
+        body {
+            height: 100%;
+            margin: 0 auto;
+            padding: 0;
+        }
+
+        #mapid {
+            height: 100%;
+        }
+    </style>
+    <title>OpenLayers map</title>
+    <script type="text/javascript">
+        var map;
+        var current_group;
+        var pos = [59.9386, 30.3141]; //Санкт-Петербург
+
+        function init() {
+
+            map = L.map('mapid').setView(pos, 13);
+
+            L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+                maxZoom: 18,
+                id: 'mapbox.mapbox-streets-v5',
+                accessToken: 'pk.eyJ1Ijoic29nYXJrb3YiLCJhIjoiY2syMG8xZTNuMTcxdTNocWdmMzZhM2o5eSJ9.sqDyEXxuHSanuTCwuSB9qQ'
+            }).addTo(map);
+            current_group = L.featureGroup();
+        }
+
+        function addMarker(coordinate, description, details, marker_color) {
+
+            var marker = L.circle(coordinate, {
+                color: '' + marker_color + '',
+                fillColor: '' + marker_color + '',
+                fillOpacity: 0.8,
+                radius: 20
+            }).addTo(current_group);
+
+            marker.bindPopup("<b>" + description + "</b><br>" + details);
+
+        }
+
+        function randomColor() {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        function Show() {
+            map.addLayer(current_group);
+        }
+
+        
+        function Reset() {
+            map.removeLayer(current_group);
+            current_group = L.featureGroup();
+        }
+
+
+        function addToPointArray(CoordX, CoordY, Text, Marker_color) {
+            addMarker(points, ol.proj.fromLonLat([CoordY, CoordX]), Text, false, Marker_color);
+        }
+
+        function WebClientClick() {
+            //очистка перед кликом координат, иначе после клика в упр. формах идет считывание координат
+            document.getElementById('CoordX').value = "0";
+            document.getElementById('CoordY').value = "0";
+
+            var WebClientOperation = document.getElementById("WebClientOperation").value;
+            //alert(WebClientOperation);
+            switch (WebClientOperation) {
+                case "0": // ничего не делаем
+                    var a = 1;
+                default: // запускаем функцию
+                    eval(WebClientOperation);
+            }
+            document.getElementById('WebClientOperation').value = "0";
+        }
+    </script>
+</head>
+
+<body onload="init()">
+    <div id="mapid"></div>
+    <input type="hidden" id="CoordX" name="CoordX" value="0">
+    <input type="hidden" id="CoordY" name="CoordY" value="0">
+    <input type="hidden" id="RouteInfo" name="RouteInfo" value="">
+    <input type="hidden" id="WebClientOperation" name="WebClientOperation" value="0">
+    <input type="hidden" id="WebClient" name="WebClient" onclick="WebClientClick();">
+</body>
+
+</html>
